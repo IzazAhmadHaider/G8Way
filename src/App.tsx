@@ -50,6 +50,28 @@ function PersonLocation() {
       return () => navigator.geolocation.clearWatch(watchId);
     }
   }, [usecoordinates]);
+  
+
+  useEffect(() => {
+    if (mapView) {
+      mapView.BlueDot.enable({
+        color: 'tomato',
+        debug: true,
+        accuracyRing: {
+          color: 'forestgreen',
+          opacity: 0.1,
+        },
+        heading: {
+          color: 'aqua',
+          opacity: 1,
+        },
+        inactiveColor: 'wheat',
+        timeout: 20000000,
+      });
+    }
+    
+  }, [mapView]);
+  
 
   useEffect(() => {
     const coordinate = usecoordinates
