@@ -1,4 +1,4 @@
-# 🗺️ **React Application with Mappedin Integration and BlueDot Animation**
+# 🗺️ **React Application with Mappedin Integration and Dynamic BlueDot Animation**
 
 This React application demonstrates how to integrate **Mappedin**, a mapping library, into a React app, allowing users to view a **3D interactive map** and animate a **BlueDot** that updates its position based on a series of coordinates.
 
@@ -124,18 +124,18 @@ It helps show the user's dynamic location on the map.
 
 
 ```javascript
-animateBlueDot(mapView);
+animateBlueDotAlongPath(mapView);
 ```
-Calls the `animateBlueDot` function to start animating the BlueDot on the map.
+Calls the `animateBlueDotAlongPath` function to start animating the BlueDot on the map.
 The BlueDot will move according to a set of coordinates.
 
 
-###  ⚒️ Function used to animate via array of Coordinates
+### ** ⚒️ Function used to animate via array of Coordinates**
 
 ```javascript
-const animateBlueDot = (mapView: any) => {}
+const animateBlueDotAlongPath = (mapView: any) => {}
 ```
-Defines an `animateBlueDot` function that will update the position of BlueDot at regular intervals.
+Defines an `animateBlueDotAlongPath` function that will update the position of BlueDot at regular intervals.
 It takes the `mapView` object as a parameter to update the BlueDot on the map.
 
 ```javascript
@@ -145,9 +145,6 @@ Initializes an index variable to track the current position in the coordinates a
 
 ```javascript
 const interval = setInterval(() => {
-
-
-
     if (index < coordinates.length) {
       // Checks if there are more coordinates left to animate.
       mapView.BlueDot.update(coordinates[index]);
@@ -179,38 +176,23 @@ catch (error) {
 Catches any errors that occur during the map initialization process.
 Logs the error message to the console for debugging.
 
-### ⚒️ Function used to animate via Geolocation API
+### ** ⚒️ Function for Navigation Using Any Geolocation API **
 
 ```javascript
-const animateBlueDotWithGeoLocation = (mapView: any) => {
-  if (navigator.geolocation) {
-    let watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const accuracy = position.coords.accuracy || 1;
-        mapView.BlueDot.update({ latitude, longitude, accuracy });
-      },
-      (error) => {
-        console.error("Error getting geolocation: ", error.message);
-      },
-      {
-        enableHighAccuracy: true, 
-        maximumAge: 0,            
-        timeout: 5000             
-      }
-    );
-    
-    setTimeout(() => {
-      navigator.geolocation.clearWatch(watchId);
-    }, 30000);
+const updateBlueDotWithLocation = (
+  mapView: any,
+  location: { latitude: number; longitude: number; accuracy: number }
+) => {
+  if (mapView) {
+    mapView.BlueDot.update(location);
   } else {
-    console.error("Geolocation is not supported by this browser.");
+    console.error("MapView is not initialized.");
   }
 };
 ```
 
 ```javascript
-  const animateBlueDotWithGeoLocation = (mapView: any) => {}
+  const updateBlueDotWithLocation = (mapView: any) => {}
 ```
 This Function is used to animate the blue dot with the location we get from geolocation service.
 
@@ -226,6 +208,6 @@ Watches for position changes, triggering the callback with updated coordinates.
 
 
 ```javascript
-console.error("Geolocation is not supported by this browser.");
+console.error("MapView is not initialized.");
 ```
-Checks browser compatibility for the Geolocation API.
+Check MapView compatibility for the Geolocation API.
