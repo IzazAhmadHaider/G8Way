@@ -1,4 +1,4 @@
-# 🗺️ **React Application with Mappedin Integration and BlueDot Animation**
+# 🗺️ **React Application with Mappedin Integration and Dynamic BlueDot Animation**
 
 This React application demonstrates how to integrate **Mappedin**, a mapping library, into a React app, allowing users to view a **3D interactive map** and animate a **BlueDot** that updates its position based on a series of coordinates.
 
@@ -145,9 +145,6 @@ Initializes an index variable to track the current position in the coordinates a
 
 ```javascript
 const interval = setInterval(() => {
-
-
-
     if (index < coordinates.length) {
       // Checks if there are more coordinates left to animate.
       mapView.BlueDot.update(coordinates[index]);
@@ -179,7 +176,7 @@ catch (error) {
 Catches any errors that occur during the map initialization process.
 Logs the error message to the console for debugging.
 
-### ** ⚒️ Function used to animate via Geolocation API**
+### ** ⚒️ Function for Navigation Using Any Geolocation API **
 
 ```javascript
 const updateBlueDotWithLocation = (
@@ -211,6 +208,6 @@ Watches for position changes, triggering the callback with updated coordinates.
 
 
 ```javascript
-console.error("Geolocation is not supported by this browser.");
+console.error("MapView is not initialized.");
 ```
-Checks browser compatibility for the Geolocation API.
+Check MapView compatibility for the Geolocation API.
