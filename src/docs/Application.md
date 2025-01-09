@@ -122,11 +122,15 @@ mapView.BlueDot.enable({
 Configures and enables the BlueDot with specific visual settings such as color, opacity, and timeout.
 It helps show the user's dynamic location on the map.
 
+
 ```javascript
 animateBlueDot(mapView);
 ```
 Calls the `animateBlueDot` function to start animating the BlueDot on the map.
 The BlueDot will move according to a set of coordinates.
+
+
+### ** ⚒️ Function used to animate via array of Coordinates**
 
 ```javascript
 const animateBlueDot = (mapView: any) => {}
@@ -175,7 +179,59 @@ catch (error) {
 Catches any errors that occur during the map initialization process.
 Logs the error message to the console for debugging.
 
-```
-Documented With Love 😍  By Izaz Ahmad
+### ** ⚒️ Function used to animate via Geolocation API**
 
+```javascript
+const animateBlueDotWithGeoLocation = (mapView: any) => {
+  if (navigator.geolocation) {
+    let watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const accuracy = position.coords.accuracy || 1;
+        mapView.BlueDot.update({ latitude, longitude, accuracy });
+      },
+      (error) => {
+        console.error("Error getting geolocation: ", error.message);
+      },
+      {
+        enableHighAccuracy: true, 
+        maximumAge: 0,            
+        timeout: 5000             
+      }
+    );
+    
+    setTimeout(() => {
+      navigator.geolocation.clearWatch(watchId);
+    }, 30000);
+  } else {
+    console.error("Geolocation is not supported by this browser.");
+  }
+};
 ```
+
+```javascript
+  const animateBlueDotWithGeoLocation = (mapView: any) => {}
+```
+This Function is used to animate the blue dot with the location we get from geolocation service.
+
+```javascript
+mapView.BlueDot.update({ latitude, longitude, accuracy });
+```
+Updates the BlueDot on the map using live geolocation data.
+
+```javascript
+navigator.geolocation.watchPosition(successCallback, errorCallback, options);
+```
+Watches for position changes, triggering the callback with updated coordinates.
+
+```javascript
+setTimeout(() => {
+  navigator.geolocation.clearWatch(watchId);
+}, 30000);
+```
+Stops location tracking after 30 seconds to conserve resources.
+
+```javascript
+console.error("Geolocation is not supported by this browser.");
+```
+Checks browser compatibility for the Geolocation API.
