@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { getMapData, show3dMap } from '@mappedin/mappedin-js';
+import { getMapData, MapView, show3dMap } from '@mappedin/mappedin-js';
 import { mapConfig } from './config';
 import '@mappedin/mappedin-js/lib/index.css';
 
@@ -44,8 +44,13 @@ const App: React.FC = () => {
             timeout: 20000,
           });
 
-          // animateBlueDot(mapView);
-          animateBlueDotWithGeoLocation(mapView);
+         // Called after obtaining location information from Wi-Fi or other sources.
+          // updateBlueDotWithLocation(mapView, {
+          //   latitude: 50.10574936554695, 
+          //   longitude: 8.671309014326267, 
+          //   accuracy: 5,
+          // });
+          
         }
       } catch (error) {
         console.error('Failed to initialize map:', error);
@@ -55,42 +60,26 @@ const App: React.FC = () => {
     initializeMap();
   }, []);
 
-  // const animateBlueDot = (mapView: any) => {
-  //   let index = 0;
-  //   const interval = setInterval(() => {
-  //     if (index < coordinates.length) {
-  //       mapView.BlueDot.update(coordinates[index]);
-  //       index++;
-  //     } else {
-  //       clearInterval(interval);
-  //     }
-  //   }, 3000);
-  // };
+    const animateBlueDot = (mapView: any) => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < coordinates.length) {
+        mapView.BlueDot.update(coordinates[index]);
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 3000);
+  };
 
-
-
-  const animateBlueDotWithGeoLocation = (mapView: any) => {
-    if (navigator.geolocation) {
-      let watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const accuracy = position.coords.accuracy || 1; 
-          mapView.BlueDot.update({ latitude, longitude, accuracy });
-        },
-        (error) => {
-          console.error("Error getting geolocation: ", error.message);
-        },
-        {
-          enableHighAccuracy: true, 
-          maximumAge: 0,            
-          timeout: 5000             
-        }
-      );
-      //   setTimeout(() => {
-      //   navigator.geolocation.clearWatch(watchId);
-      // }, 30000);
+  const updateBlueDotWithLocation = (
+    mapView: any,
+    location: { latitude: number; longitude: number; accuracy: number }
+  ) => {
+    if (mapView) {
+      mapView.BlueDot.update(location);
     } else {
-      console.error("Geolocation is not supported by this browser.");
+      console.error("MapView is not initialized.");
     }
   };
   
