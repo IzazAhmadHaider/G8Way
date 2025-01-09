@@ -130,7 +130,7 @@ Calls the `animateBlueDot` function to start animating the BlueDot on the map.
 The BlueDot will move according to a set of coordinates.
 
 
-### ** ⚒️ Function used to animate via array of Coordinates**
+###  ⚒️ Function used to animate via array of Coordinates
 
 ```javascript
 const animateBlueDot = (mapView: any) => {}
@@ -179,7 +179,7 @@ catch (error) {
 Catches any errors that occur during the map initialization process.
 Logs the error message to the console for debugging.
 
-### ** ⚒️ Function used to animate via Geolocation API**
+### ⚒️ Function used to animate via Geolocation API
 
 ```javascript
 const animateBlueDotWithGeoLocation = (mapView: any) => {
