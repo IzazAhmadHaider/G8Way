@@ -44,7 +44,7 @@ const App: React.FC = () => {
             timeout: 20000,
           });
 
-          animateBlueDot(mapView);
+          // animateBlueDot(mapView);
         }
       } catch (error) {
         console.error('Failed to initialize map:', error);
