@@ -60,17 +60,17 @@ const App: React.FC = () => {
     initializeMap();
   }, []);
 
-    const animateBlueDot = (mapView: any) => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < coordinates.length) {
-        mapView.BlueDot.update(coordinates[index]);
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 3000);
-  };
+  //   const animateBlueDot = (mapView: any) => {
+  //   let index = 0;
+  //   const interval = setInterval(() => {
+  //     if (index < coordinates.length) {
+  //       mapView.BlueDot.update(coordinates[index]);
+  //       index++;
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 3000);
+  // };
 
   const updateBlueDotWithLocation = (
     mapView: any,

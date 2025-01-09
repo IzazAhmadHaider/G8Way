@@ -194,20 +194,14 @@ const updateBlueDotWithLocation = (
 ```javascript
   const updateBlueDotWithLocation = (mapView: any) => {}
 ```
-This Function is used to animate the blue dot with the location we get from geolocation service.
+This Function is used to animate the blue dot with the location we get as parameter from any source.
 
 ```javascript
-mapView.BlueDot.update({ latitude, longitude, accuracy });
+mapView.BlueDot.update(location);
 ```
-Updates the BlueDot on the map using live geolocation data.
-
-```javascript
-navigator.geolocation.watchPosition(successCallback, errorCallback, options);
-```
-Watches for position changes, triggering the callback with updated coordinates.
-
+Updates the BlueDot on the map.
 
 ```javascript
 console.error("MapView is not initialized.");
 ```
-Check MapView compatibility for the Geolocation API.
+It will trigger any error in map view.
