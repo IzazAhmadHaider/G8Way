@@ -86,9 +86,9 @@ const App: React.FC = () => {
           timeout: 5000             
         }
       );
-        setTimeout(() => {
-        navigator.geolocation.clearWatch(watchId);
-      }, 30000);
+      //   setTimeout(() => {
+      //   navigator.geolocation.clearWatch(watchId);
+      // }, 30000);
     } else {
       console.error("Geolocation is not supported by this browser.");
     }

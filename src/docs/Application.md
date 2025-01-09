@@ -224,12 +224,6 @@ navigator.geolocation.watchPosition(successCallback, errorCallback, options);
 ```
 Watches for position changes, triggering the callback with updated coordinates.
 
-```javascript
-setTimeout(() => {
-  navigator.geolocation.clearWatch(watchId);
-}, 30000);
-```
-Stops location tracking after 30 seconds to conserve resources.
 
 ```javascript
 console.error("Geolocation is not supported by this browser.");
