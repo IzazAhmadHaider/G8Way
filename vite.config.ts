@@ -8,4 +8,5 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: "https://g8way-app.com/map/",
   plugins: [react()],
-});
+  base: '/map', 
+})
