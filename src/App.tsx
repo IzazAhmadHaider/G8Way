@@ -72,7 +72,8 @@ const App: React.FC = () => {
   //   }, 3000);
   // };
 
-  const _updateBlueDotWithLocation = (
+  // @ts-ignore
+  const updateBlueDotWithLocation = (
     mapView: any,
     location: { latitude: number; longitude: number; accuracy: number }
   ) => {
