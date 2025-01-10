@@ -1,4 +1,11 @@
+<<<<<<< HEAD
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.html [QSA,L]
+=======
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]
+>>>>>>> 8692f7aedfd057b27aec165bcd2c022697254e74
