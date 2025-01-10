@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { getMapData, MapView, show3dMap } from '@mappedin/mappedin-js';
+import { getMapData, show3dMap } from '@mappedin/mappedin-js';
 import { mapConfig } from './config';
 import '@mappedin/mappedin-js/lib/index.css';
 
@@ -72,7 +72,7 @@ const App: React.FC = () => {
   //   }, 3000);
   // };
 
-  const updateBlueDotWithLocation = (
+  const _updateBlueDotWithLocation = (
     mapView: any,
     location: { latitude: number; longitude: number; accuracy: number }
   ) => {
