@@ -71,17 +71,17 @@ const App: React.FC = () => {
   //     }
   //   }, 3000);
   // };
-
-  // const updateBlueDotWithLocation = (
-  //   mapView: any,
-  //   location: { latitude: number; longitude: number; accuracy: number }
-  // ) => {
-  //   if (mapView) {
-  //     mapView.BlueDot.update(location);
-  //   } else {
-  //     console.error("MapView is not initialized.");
-  //   }
-  // };
+  
+  const updateBlueDotWithLocation = (
+    mapView: any,
+    location: { latitude: number; longitude: number; accuracy: number }
+  ) => {
+    if (mapView) {
+      mapView.BlueDot.update(location);
+    } else {
+      console.error("MapView is not initialized.");
+    }
+  };
   
 
   return <div id="mappedin-map" style={{ width: '100%', height: '100vh' }} />;
