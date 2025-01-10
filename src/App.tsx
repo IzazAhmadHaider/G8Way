@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { getMapData, MapView, show3dMap } from '@mappedin/mappedin-js';
+import { getMapData, show3dMap } from '@mappedin/mappedin-js';
 import { mapConfig } from './config';
 import '@mappedin/mappedin-js/lib/index.css';
 
@@ -72,16 +72,16 @@ const App: React.FC = () => {
   //   }, 3000);
   // };
 
-  const updateBlueDotWithLocation = (
-    mapView: any,
-    location: { latitude: number; longitude: number; accuracy: number }
-  ) => {
-    if (mapView) {
-      mapView.BlueDot.update(location);
-    } else {
-      console.error("MapView is not initialized.");
-    }
-  };
+  // const updateBlueDotWithLocation = (
+  //   mapView: any,
+  //   location: { latitude: number; longitude: number; accuracy: number }
+  // ) => {
+  //   if (mapView) {
+  //     mapView.BlueDot.update(location);
+  //   } else {
+  //     console.error("MapView is not initialized.");
+  //   }
+  // };
   
 
   return <div id="mappedin-map" style={{ width: '100%', height: '100vh' }} />;
