@@ -71,7 +71,6 @@ const App: React.FC = () => {
   //     }
   //   }, 3000);
   // };
-
   // @ts-ignore
   const updateBlueDotWithLocation = (
     mapView: any,
