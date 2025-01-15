@@ -57,7 +57,7 @@ const App: React.FC = () => {
 
   const updateBlueDotWithLocation = (
     mapView: any,
-    location: { latitude: number; longitude: number; accuracy: number }
+    location: { latitude: number; longitude: number; accuracy: number , floorOrFloorId?: string | "device";}
   ) => {
     if (mapView) {
       mapView.BlueDot.update(location);
