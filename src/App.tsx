@@ -29,6 +29,7 @@ const App: React.FC = () => {
         // });
 
           mapView.BlueDot.enable({
+            watchBrowserPosition: false, 
             color: '#39A2F9',
             debug: true,
             accuracyRing: {
