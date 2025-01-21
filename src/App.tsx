@@ -67,7 +67,7 @@ const App: React.FC = () => {
           // getPoint(mapView, coordinates[0]);
           // getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
           window.sendYourPointOfInterest = (Point) => {
-            console.log(Point);
+            alert(Point);
             getDirectionToPOI(mapData, mapView, locationFromOtherSource, 'Relay');
           };
           window.getAllPOIsOnAllFloors = () => {
