@@ -7,7 +7,7 @@ declare global {
   interface Window {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
     getAllPOIsOnAllFloors?: () => any[];
-    sendYourPointOfInterest?: (PointOfInterset: string) => void;
+    sendYourPointOfInterest?: (Point: string) => void;
   }
 }
 
