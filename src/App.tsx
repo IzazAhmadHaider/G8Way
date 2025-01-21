@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { getMapData, show3dMap } from '@mappedin/mappedin-js';
 import { mapConfig } from './config';
 import '@mappedin/mappedin-js/lib/index.css';
@@ -14,7 +14,8 @@ declare global {
 
 
 const App: React.FC = () => {
-  const [locationFromOtherSource, setLocationFromOtherSource] = useState<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
+  // const [locationFromOtherSource, setLocationFromOtherSource] = useState<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
+  const locationRef = useRef<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
   const coordinates = [
     { latitude: 50.05094083499548, longitude: 8.572160424940426, accuracy: 1 },
@@ -67,11 +68,11 @@ const App: React.FC = () => {
           // getPoint(mapView, coordinates[0]);
           getDirectionToPOI(mapData, mapView, coordinates[0], 'Relay');
           window.sendYourPointOfInterest = (Point) => {
-            const location = locationFromOtherSource;  // Use the value immediately
-            alert(location ? location.latitude + "," + location.longitude : 'No location');
-            getDirectionToPOI(mapData, mapView, location, Point);
+            // const location = locationFromOtherSource;  // Use the value immediately
+            alert(locationRef);
+            getDirectionToPOI(mapData, mapView, locationRef, Point);
           };
-          
+
           window.getAllPOIsOnAllFloors = () => {
             return getAllPOIsOnAllFloors(mapData);
           };
@@ -156,7 +157,8 @@ const App: React.FC = () => {
   ) => {
     if (mapView) {
       alert(location);
-      setLocationFromOtherSource(location);
+      // setLocationFromOtherSource(location);
+      locationRef.current = location;
       mapView.BlueDot.update(location);
     } else {
       console.error('MapView is not initialized.');
