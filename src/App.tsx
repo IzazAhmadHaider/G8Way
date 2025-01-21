@@ -138,7 +138,7 @@ const App: React.FC = () => {
       console.log(`Point of Interest "${poiName}" not found.`);
       return;
     }
-    const startCoordinate = mapView.createCoordinate(startPoint.latitude, startPoint.longitude, startPoint.floorId);
+    const startCoordinate = mapView.createCoordinate(startPoint.latitude, startPoint.longitude, startPoint?.floorId);
     const endCoordinate = targetPOI.coordinate;
     const directions = mapData.getDirections(startCoordinate, endCoordinate)
     if (directions) {
