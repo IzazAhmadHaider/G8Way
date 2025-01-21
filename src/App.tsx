@@ -16,16 +16,16 @@ declare global {
 const App: React.FC = () => {
   const [locationFromOtherSource, setLocationFromOtherSource] = React.useState<{ latitude: number; longitude: number; floorOrFloorId?: string | "device"; } | null>(null);
 
-  const coordinates = [
-    { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
-    { latitude: 50.10570067068403, longitude: 8.671242197773896, accuracy: 1 },
-    { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
-    { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
-    { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
-    { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
-    { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
-    { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
-  ];
+  // const coordinates = [
+  //   { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
+  //   { latitude: 50.10570067068403, longitude: 8.671242197773896, accuracy: 1 },
+  //   { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
+  //   { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
+  //   { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
+  //   { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
+  //   { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
+  //   { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
+  // ];
   useEffect(() => {
     const initializeMap = async () => {
       try {
