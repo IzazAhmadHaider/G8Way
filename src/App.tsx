@@ -16,16 +16,16 @@ declare global {
 const App: React.FC = () => {
   const [locationFromOtherSource, setLocationFromOtherSource] = useState<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
-  // const coordinates = [
-  //   { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
-  //   { latitude: 50.10570067068403, longitude: 8.671242197773896, accuracy: 1 },
-  //   { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
-  //   { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
-  //   { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
-  //   { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
-  //   { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
-  //   { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
-  // ];
+  const coordinates = [
+    { latitude: 50.05094083499548, longitude: 8.572160424940426, accuracy: 1 },
+    { latitude: 50.05088076816026, longitude: 8.572121422508308, accuracy: 1 },
+    { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
+    { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
+    { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
+    { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
+    { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
+    { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
+  ];
   useEffect(() => {
     const initializeMap = async () => {
       try {
@@ -65,10 +65,10 @@ const App: React.FC = () => {
             updateBlueDotWithLocation(mapView, location);
           };
           // getPoint(mapView, coordinates[0]);
-          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
+          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Relay');
           window.sendYourPointOfInterest = (Point) => {
             alert(locationFromOtherSource + Point)
-            getDirectionToPOI(mapData, mapView, locationFromOtherSource, Point);
+            getDirectionToPOI(mapData, mapView, coordinates[0], Point);
           };
           window.getAllPOIsOnAllFloors = () => {
             return getAllPOIsOnAllFloors(mapData);
