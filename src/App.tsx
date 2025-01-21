@@ -131,6 +131,7 @@ const App: React.FC = () => {
     if (directions) {
       mapView.Navigation.draw(directions);
       return directions.distance;
+      alert(directions.distance);
     }
     return null; 
   };
