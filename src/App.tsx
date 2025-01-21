@@ -130,7 +130,6 @@ const App: React.FC = () => {
     const directions = mapData.getDirections(startCoordinate, endCoordinate)
     if (directions) {
       mapView.Navigation.draw(directions);
-      alert(directions.distance);
       return directions.distance;
     }
     return null; 
@@ -143,7 +142,6 @@ const App: React.FC = () => {
     location: { latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device"; }
   ) => {
     if (mapView) {
-      alert(location);
       locationRef.current = location;
       mapView.BlueDot.update(location);
     } else {
