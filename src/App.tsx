@@ -27,6 +27,9 @@ const App: React.FC = () => {
   //   { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
   //   { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
   // ];
+  // useEffect(() => {
+  //   locationRef.current = coordinates[0]; // Update the ref with the first coordinate
+  // }, []);
   useEffect(() => {
     const initializeMap = async () => {
       try {
@@ -66,11 +69,11 @@ const App: React.FC = () => {
             updateBlueDotWithLocation(mapView, location);
           };
           // getPoint(mapView, coordinates[0]);
-          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Relay');
+          // getDirectionToPOI(mapData, mapView, locationRef.current, 'Relay');
           window.sendYourPointOfInterest = (Point) => {
             // const location = locationFromOtherSource;  // Use the value immediately
-            alert(locationRef);
-            getDirectionToPOI(mapData, mapView, locationRef, Point);
+            alert(locationRef.current + ': ' + Point);
+            getDirectionToPOI(mapData, mapView, locationRef.current, Point);
           };
 
           window.getAllPOIsOnAllFloors = () => {
