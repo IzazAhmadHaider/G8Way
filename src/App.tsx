@@ -153,6 +153,7 @@ const App: React.FC = () => {
     location: { latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device"; }
   ) => {
     if (mapView) {
+      alert(location);
       setLocationFromOtherSource(location);
       mapView.BlueDot.update(location);
     } else {
