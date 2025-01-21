@@ -130,8 +130,8 @@ const App: React.FC = () => {
     const directions = mapData.getDirections(startCoordinate, endCoordinate)
     if (directions) {
       mapView.Navigation.draw(directions);
-      return directions.distance;
       alert(directions.distance);
+      return directions.distance;
     }
     return null; 
   };
