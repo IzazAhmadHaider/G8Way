@@ -65,7 +65,7 @@ const App: React.FC = () => {
             updateBlueDotWithLocation(mapView, location);
           };
           // getPoint(mapView, coordinates[0]);
-          getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
+          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
           window.sendYourPointOfInterest = (Point) => {
             getDirectionToPOI(mapData, mapView, locationFromOtherSource, Point);
           };
