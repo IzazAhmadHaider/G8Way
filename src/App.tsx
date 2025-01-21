@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getMapData, show3dMap } from '@mappedin/mappedin-js';
 import { mapConfig } from './config';
 import '@mappedin/mappedin-js/lib/index.css';
@@ -14,7 +14,7 @@ declare global {
 
 
 const App: React.FC = () => {
-  const [locationFromOtherSource, setLocationFromOtherSource] = React.useState<{ latitude: number; longitude: number; floorOrFloorId?: string | "device"; } | null>(null);
+  const [locationFromOtherSource, setLocationFromOtherSource] = useState<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
   // const coordinates = [
   //   { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
