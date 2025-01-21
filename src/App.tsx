@@ -69,9 +69,9 @@ const App: React.FC = () => {
           window.sendYourPointOfInterest = (Point) => {
             getDirectionToPOI(mapData, mapView, locationFromOtherSource, Point);
           };
-          // window.getAllPOIsListOnAllFloors = (mapData) => {
-          getAllPOIsOnAllFloors(mapData)
-          // };
+          window.getAllPOIsOnAllFloors = () => {
+            return getAllPOIsOnAllFloors(mapData);
+          };
         }
       } catch (error) {
         console.error('Failed to initialize map:', error);
@@ -120,7 +120,7 @@ const App: React.FC = () => {
         floorId: poi.floor.id,
         floorName: poi.floor.name,
         id: poi.id,
-        description : poi.description,
+        description: poi.description,
         images: poi.images,
         links: poi.links,
       });
