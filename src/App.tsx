@@ -7,10 +7,26 @@ declare global {
   interface Window {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
     getAllPOIsOnAllFloors?: () => any[];
+    sendYourPointOfInterest?: (location: { latitude?: number; longitude?: number; name?: string; floorOrFloorId?: string | "device" }) => void;
+    // getAllPOIsListOnAllFloors
   }
 }
 
+
+
 const App: React.FC = () => {
+  const [locationFromOtherSource, setLocationFromOtherSource] = React.useState<{ latitude: number; longitude: number; floorOrFloorId?: string | "device"; } | null>(null);
+
+  // const coordinates = [
+  //   { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
+  //   { latitude: 50.10570067068403, longitude: 8.671242197773896, accuracy: 1 },
+  //   { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
+  //   { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
+  //   { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
+  //   { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
+  //   { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
+  //   { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
+  // ];
   useEffect(() => {
     const initializeMap = async () => {
       try {
@@ -23,14 +39,20 @@ const App: React.FC = () => {
         const mapContainer = document.getElementById('mappedin-map');
         if (mapContainer) {
           const mapView = await show3dMap(mapContainer, mapData);
-        //   mapView.on('click', async (event) => {
-        //     console.log('Event object:', event); // Log the entire event object
-        //     console.log('Coordinate:', event.coordinate);
-       
-        // });
+          //   mapView.on('click', async (event) => {
+          //     console.log('Event object:', event); // Log the entire event object
+          //     console.log('Coordinate:', event.coordinate);
+
+          // });
+          mapView.Labels.all();
+          mapView.Camera.set({
+            pitch: 5, // Tilt angle in degrees
+            bearing: -42, // Rotation angle in degrees (0 = North)
+            zoomLevel: 19, // Adjust zoom level as needed
+          });
 
           mapView.BlueDot.enable({
-            watchBrowserPosition: false, 
+            watchBrowserPosition: false,
             color: '#39A2F9',
             debug: true,
             accuracyRing: {
@@ -48,6 +70,14 @@ const App: React.FC = () => {
           window.sendLocationToWebApp = (location) => {
             updateBlueDotWithLocation(mapView, location);
           };
+          // getPoint(mapView, coordinates[0]);
+          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
+          window.sendYourPointOfInterest = (location) => {
+            getDirectionToPOI(mapData, mapView, locationFromOtherSource, location);
+          };
+          // window.getAllPOIsListOnAllFloors = (mapData) => {
+          //   getAllPOIsOnAllFloors(mapData)
+          // };
         }
       } catch (error) {
         console.error('Failed to initialize map:', error);
@@ -57,33 +87,74 @@ const App: React.FC = () => {
     initializeMap();
   }, []);
 
-  const getAllPOIsOnAllFloors = (mapData: any) => {
-    // Ensure mapData is available
-    if (!mapData) {
-      console.error('Map data is not initialized.');
-      return [];
+
+
+  // The Below Function is for Animating to a specific point of interset on the map
+
+  // const getPoint = (mapView: any, location: { latitude?: number; longitude?: number; name?: string, floorOrFloorId?: string | "device"; }) => {
+  //   if (mapView) {
+  //     const poi = mapView.Camera.animateTo(
+  //       {
+  //         bearing: 30,
+  //         pitch: 80,
+  //         zoomLevel: 100,
+  //         center: location,
+  //       },
+  //       { duration: 4000, easing: 'ease-in-out' },
+  //     );
+  //     return poi;
+  //   } else {
+  //     console.error('MapView is not initialized.');
+  //   }
+
+  // };
+
+  // const getAllPOIsOnAllFloors = (mapData: any) => {
+  //   // Ensure mapData is available
+  //   if (!mapData) {
+  //     console.error('Map data is not initialized.');
+  //     return [];
+  //   };
+
+  //   // Retrieve all POIs in a flat array
+  //   const pois: any[] = [];
+
+  //   for (const poi of mapData.getByType('point-of-interest')) {
+  //     pois.push({
+  //       name: poi.name,
+  //       coordinate: poi.coordinate,
+  //       floorId: poi.floor.id,
+  //       floorName: poi.floor.name,
+  //     });
+  //   }
+
+  //   return pois;
+  // };
+
+
+  const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiName: any) => {
+    const allPOIs = mapData.getByType('point-of-interest');
+    const targetPOI = allPOIs.find((poi: { name: string })  => poi.name.toLowerCase() === poiName.toLowerCase());
+    if (!targetPOI) {
+      console.error(`Point of Interest "${poiName}" not found.`);
+      return;
     }
-  
-    // Retrieve all POIs in a flat array
-    const pois: any[] = [];
-  
-    for (const poi of mapData.getByType('point-of-interest')) {
-      pois.push({
-        name: poi.name,
-        coordinate: poi.coordinate,
-        floorId: poi.floor.id,
-        floorName: poi.floor.name,
-      });
+    const startCoordinate = mapView.createCoordinate(startPoint.latitude, startPoint.longitude, startPoint.floorId);
+    const endCoordinate = targetPOI.coordinate;
+    const directions = mapData.getDirections(startCoordinate, endCoordinate)
+    if (directions) {
+      mapView.Navigation.draw(directions);
     }
-  
-    return pois;
   };
-  
+
+
+
   const updateBlueDotWithLocation = (
     mapView: any,
-    location: { latitude: number; longitude: number; accuracy: number , floorOrFloorId?: string | "device";}
+    location: { latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device"; }
   ) => {
     if (mapView) {
+      setLocationFromOtherSource(location);
       mapView.BlueDot.update(location);
     } else {
       console.error('MapView is not initialized.');
