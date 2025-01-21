@@ -7,7 +7,7 @@ declare global {
   interface Window {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
     getAllPOIsOnAllFloors?: () => any[];
-    NavigateToPOI?: (Point: string) => void;
+    NavigateToPOI?: (Point: string) => string;
   }
 }
 
@@ -57,7 +57,7 @@ const App: React.FC = () => {
             updateBlueDotWithLocation(mapView, location);
           };
           window.NavigateToPOI = (Point) => {
-            getDirectionToPOI(mapData, mapView, locationRef.current, Point);
+            return getDirectionToPOI(mapData, mapView, locationRef.current, Point);
           };
 
           window.getAllPOIsOnAllFloors = () => {
@@ -118,11 +118,12 @@ const App: React.FC = () => {
   };
 
 
-  const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiName: any) => {
+  const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiId: any) => {
     const allPOIs = mapData.getByType('point-of-interest');
-    const targetPOI = allPOIs.find((poi: { name: string }) => poi.name.toLowerCase() === poiName.toLowerCase());
+    //const targetPOI = allPOIs.find((poi: { name: string }) => poi.name.toLowerCase() === poiName.toLowerCase());
+    const targetPOI = allPOIs.find((poi: { id: string }) => poi.id === poiId.trim());
     if (!targetPOI) {
-      console.log(`Point of Interest "${poiName}" not found.`);
+      console.log(`Point of Interest "${poiId}" not found.`);
       return;
     }
     const startCoordinate = mapView.createCoordinate(startPoint.latitude, startPoint.longitude, startPoint?.floorId);
