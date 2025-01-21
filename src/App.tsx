@@ -7,7 +7,7 @@ declare global {
   interface Window {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
     getAllPOIsOnAllFloors?: () => any[];
-    sendYourPointOfInterest?: (location: { latitude?: number; longitude?: number; name?: string; floorOrFloorId?: string | "device" }) => void;
+    sendYourPointOfInterest?: (PointOfInterset: string) => void;
     // getAllPOIsListOnAllFloors
   }
 }
@@ -17,16 +17,16 @@ declare global {
 const App: React.FC = () => {
   const [locationFromOtherSource, setLocationFromOtherSource] = React.useState<{ latitude: number; longitude: number; floorOrFloorId?: string | "device"; } | null>(null);
 
-  // const coordinates = [
-  //   { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
-  //   { latitude: 50.10570067068403, longitude: 8.671242197773896, accuracy: 1 },
-  //   { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
-  //   { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
-  //   { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
-  //   { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
-  //   { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
-  //   { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
-  // ];
+  const coordinates = [
+    { latitude: 50.10574936554695, longitude: 8.671309014326267, accuracy: 1 },
+    { latitude: 50.10570067068403, longitude: 8.671242197773896, accuracy: 1 },
+    { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
+    { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
+    { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
+    { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
+    { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
+    { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
+  ];
   useEffect(() => {
     const initializeMap = async () => {
       try {
@@ -71,9 +71,9 @@ const App: React.FC = () => {
             updateBlueDotWithLocation(mapView, location);
           };
           // getPoint(mapView, coordinates[0]);
-          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
-          window.sendYourPointOfInterest = (location) => {
-            getDirectionToPOI(mapData, mapView, locationFromOtherSource, location);
+          getDirectionToPOI(mapData, mapView, coordinates[0], 'Gate 3');
+          window.sendYourPointOfInterest = (Point) => {
+            getDirectionToPOI(mapData, mapView, locationFromOtherSource, Point);
           };
           // window.getAllPOIsListOnAllFloors = (mapData) => {
           //   getAllPOIsOnAllFloors(mapData)
@@ -134,9 +134,9 @@ const App: React.FC = () => {
 
   const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiName: any) => {
     const allPOIs = mapData.getByType('point-of-interest');
-    const targetPOI = allPOIs.find((poi: { name: string })  => poi.name.toLowerCase() === poiName.toLowerCase());
+    const targetPOI = allPOIs.find((poi: { name: string }) => poi.name.toLowerCase() === poiName.toLowerCase());
     if (!targetPOI) {
-      console.error(`Point of Interest "${poiName}" not found.`);
+      alert(`Point of Interest "${poiName}" not found.`);
       return;
     }
     const startCoordinate = mapView.createCoordinate(startPoint.latitude, startPoint.longitude, startPoint.floorId);
