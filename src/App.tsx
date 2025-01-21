@@ -8,7 +8,6 @@ declare global {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
     getAllPOIsOnAllFloors?: () => any[];
     sendYourPointOfInterest?: (PointOfInterset: string) => void;
-    // getAllPOIsListOnAllFloors
   }
 }
 
@@ -39,16 +38,11 @@ const App: React.FC = () => {
         const mapContainer = document.getElementById('mappedin-map');
         if (mapContainer) {
           const mapView = await show3dMap(mapContainer, mapData);
-          //   mapView.on('click', async (event) => {
-          //     console.log('Event object:', event); // Log the entire event object
-          //     console.log('Coordinate:', event.coordinate);
 
-          // });
-          mapView.Labels.all();
           mapView.Camera.set({
-            pitch: 5, // Tilt angle in degrees
-            bearing: -42, // Rotation angle in degrees (0 = North)
-            zoomLevel: 19, // Adjust zoom level as needed
+            pitch: 5,
+            bearing: 70,
+            zoomLevel: 10,
           });
 
           mapView.BlueDot.enable({
@@ -76,7 +70,7 @@ const App: React.FC = () => {
             getDirectionToPOI(mapData, mapView, locationFromOtherSource, Point);
           };
           // window.getAllPOIsListOnAllFloors = (mapData) => {
-          //   getAllPOIsOnAllFloors(mapData)
+          getAllPOIsOnAllFloors(mapData)
           // };
         }
       } catch (error) {
@@ -109,34 +103,38 @@ const App: React.FC = () => {
 
   // };
 
-  // const getAllPOIsOnAllFloors = (mapData: any) => {
-  //   // Ensure mapData is available
-  //   if (!mapData) {
-  //     console.error('Map data is not initialized.');
-  //     return [];
-  //   };
+  const getAllPOIsOnAllFloors = (mapData: any) => {
+    // Ensure mapData is available
+    if (!mapData) {
+      console.error('Map data is not initialized.');
+      return [];
+    };
 
-  //   // Retrieve all POIs in a flat array
-  //   const pois: any[] = [];
+    // Retrieve all POIs in a flat array
+    const pois: any[] = [];
 
-  //   for (const poi of mapData.getByType('point-of-interest')) {
-  //     pois.push({
-  //       name: poi.name,
-  //       coordinate: poi.coordinate,
-  //       floorId: poi.floor.id,
-  //       floorName: poi.floor.name,
-  //     });
-  //   }
-
-  //   return pois;
-  // };
+    for (const poi of mapData.getByType('point-of-interest')) {
+      pois.push({
+        name: poi.name,
+        coordinate: poi.coordinate,
+        floorId: poi.floor.id,
+        floorName: poi.floor.name,
+        id: poi.id,
+        description : poi.description,
+        images: poi.images,
+        links: poi.links,
+      });
+    }
+    console.log(pois)
+    return pois;
+  };
 
 
   const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiName: any) => {
     const allPOIs = mapData.getByType('point-of-interest');
     const targetPOI = allPOIs.find((poi: { name: string }) => poi.name.toLowerCase() === poiName.toLowerCase());
     if (!targetPOI) {
-      alert(`Point of Interest "${poiName}" not found.`);
+      console.log(`Point of Interest "${poiName}" not found.`);
       return;
     }
     const startCoordinate = mapView.createCoordinate(startPoint.latitude, startPoint.longitude, startPoint.floorId);
