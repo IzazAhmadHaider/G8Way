@@ -65,11 +65,13 @@ const App: React.FC = () => {
             updateBlueDotWithLocation(mapView, location);
           };
           // getPoint(mapView, coordinates[0]);
-          // getDirectionToPOI(mapData, mapView, coordinates[0], 'Relay');
+          getDirectionToPOI(mapData, mapView, coordinates[0], 'Relay');
           window.sendYourPointOfInterest = (Point) => {
-            alert(locationFromOtherSource + Point)
-            getDirectionToPOI(mapData, mapView, coordinates[0], Point);
+            const location = locationFromOtherSource;  // Use the value immediately
+            alert(location ? location.latitude + "," + location.longitude : 'No location');
+            getDirectionToPOI(mapData, mapView, location, Point);
           };
+          
           window.getAllPOIsOnAllFloors = () => {
             return getAllPOIsOnAllFloors(mapData);
           };
