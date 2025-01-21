@@ -7,7 +7,7 @@ declare global {
   interface Window {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
     getAllPOIsOnAllFloors?: () => any[];
-    sendYourPointOfInterest?: (Point: string) => void;
+    NavigateToPOI?: (Point: string) => void;
   }
 }
 
@@ -17,19 +17,7 @@ const App: React.FC = () => {
   // const [locationFromOtherSource, setLocationFromOtherSource] = useState<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
   const locationRef = useRef<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
-  // const coordinates = [
-  //   { latitude: 50.05094083499548, longitude: 8.572160424940426, accuracy: 1 },
-  //   { latitude: 50.05088076816026, longitude: 8.572121422508308, accuracy: 1 },
-  //   { latitude: 50.105675886069676, longitude: 8.671190462733136, accuracy: 1 },
-  //   { latitude: 50.1056380411509, longitude: 8.671192723225422, accuracy: 1 },
-  //   { latitude: 50.10560685694093, longitude: 8.671219439428766, accuracy: 1 },
-  //   { latitude: 50.10558663551319, longitude: 8.671242395027216, accuracy: 1 },
-  //   { latitude: 50.10555929583722, longitude: 8.671269500653219, accuracy: 1 },
-  //   { latitude: 50.1055486636721, longitude: 8.671309313452236, accuracy: 1 },
-  // ];
-  // useEffect(() => {
-  //   locationRef.current = coordinates[0]; // Update the ref with the first coordinate
-  // }, []);
+
   useEffect(() => {
     const initializeMap = async () => {
       try {
@@ -68,11 +56,7 @@ const App: React.FC = () => {
           window.sendLocationToWebApp = (location) => {
             updateBlueDotWithLocation(mapView, location);
           };
-          // getPoint(mapView, coordinates[0]);
-          // getDirectionToPOI(mapData, mapView, locationRef.current, 'Relay');
-          window.sendYourPointOfInterest = (Point) => {
-            // const location = locationFromOtherSource;  // Use the value immediately
-            alert(locationRef.current + ': ' + Point);
+          window.NavigateToPOI = (Point) => {
             getDirectionToPOI(mapData, mapView, locationRef.current, Point);
           };
 
@@ -111,13 +95,10 @@ const App: React.FC = () => {
   // };
 
   const getAllPOIsOnAllFloors = (mapData: any) => {
-    // Ensure mapData is available
     if (!mapData) {
       console.error('Map data is not initialized.');
       return [];
     };
-
-    // Retrieve all POIs in a flat array
     const pois: any[] = [];
 
     for (const poi of mapData.getByType('point-of-interest')) {
@@ -150,6 +131,7 @@ const App: React.FC = () => {
     if (directions) {
       mapView.Navigation.draw(directions);
     }
+    return directions.distance;
   };
 
 
@@ -160,7 +142,6 @@ const App: React.FC = () => {
   ) => {
     if (mapView) {
       alert(location);
-      // setLocationFromOtherSource(location);
       locationRef.current = location;
       mapView.BlueDot.update(location);
     } else {
