@@ -6,6 +6,7 @@ import '@mappedin/mappedin-js/lib/index.css';
 declare global {
   interface Window {
     sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
+    getAllPOIsOnAllFloors?: () => any[];
   }
 }
 
@@ -56,6 +57,28 @@ const App: React.FC = () => {
     initializeMap();
   }, []);
 
+  const getAllPOIsOnAllFloors = (mapData: any) => {
+    // Ensure mapData is available
+    if (!mapData) {
+      console.error('Map data is not initialized.');
+      return [];
+    }
+  
+    // Retrieve all POIs in a flat array
+    const pois: any[] = [];
+  
+    for (const poi of mapData.getByType('point-of-interest')) {
+      pois.push({
+        name: poi.name,
+        coordinate: poi.coordinate,
+        floorId: poi.floor.id,
+        floorName: poi.floor.name,
+      });
+    }
+  
+    return pois;
+  };
+  
   const updateBlueDotWithLocation = (
     mapView: any,
     location: { latitude: number; longitude: number; accuracy: number , floorOrFloorId?: string | "device";}
