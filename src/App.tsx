@@ -6,8 +6,7 @@ import '@mappedin/mappedin-js/lib/index.css';
 declare global {
   interface Window {
     sendLocationToWebApp?: (
-      location: { latitude: number; longitude: number; accuracy: number },
-      options?: { center?: boolean }) => void;
+      location: { latitude: number; longitude: number; accuracy: number }, center?: boolean) => void;
     getAllPOIsOnAllFloors?: (distance?: boolean) => any[];
     NavigateToPOI?: (Point: string) => string;
     getCurrentFloorId: () => string | null;
@@ -63,12 +62,12 @@ const getAllFloors = (mapData: any) => {
 //   return pois;
 // };
 const coordinates = [
-  { latitude: 50.051445297436906, longitude: 8.573888102899321, accuracy: 1 , floorid : 'm_01a8460ea3632b89' },
+  { latitude: 50.051445297436906, longitude: 8.573888102899321, accuracy: 1, floorid: 'm_01a8460ea3632b89' },
   { latitude: 50.05088076816026, longitude: 8.572121422508308, accuracy: 1 },
 ];
 
 
-const getAllPOIsOnAllFloors = (mapData:any, mapView : any, currentLocation:any, calculateDistance = false) => {
+const getAllPOIsOnAllFloors = (mapData: any, mapView: any, currentLocation: any, calculateDistance = false) => {
   if (!mapData) {
     console.error('Map data is not initialized.');
     return [];
@@ -89,7 +88,7 @@ const getAllPOIsOnAllFloors = (mapData:any, mapView : any, currentLocation:any, 
       description: poi.description,
       images: poi.images,
       links: poi.links,
-      distance:0
+      distance: 0
     };
     if (calculateDistance) {
       const startCoordinate = mapView.createCoordinate(currentLocation.latitude, currentLocation.longitude, currentLocation?.floorId);
@@ -106,7 +105,7 @@ const getAllPOIsOnAllFloors = (mapData:any, mapView : any, currentLocation:any, 
     }
     pois.push(poiData);
   }
-  console.log(pois);
+  // console.log(pois);
   return pois;
 };
 
@@ -135,7 +134,7 @@ const App: React.FC = () => {
   const locationRef = useRef<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
   useEffect(() => {
-    
+
     locationRef.current = coordinates[0];
   }, []);
 
@@ -154,16 +153,16 @@ const App: React.FC = () => {
 
         const mapContainer = document.getElementById('mappedin-map');
         if (mapContainer) {
-          const mapView = await show3dMap(mapContainer, mapData, 
+          const mapView = await show3dMap(mapContainer, mapData,
             // {initialFloor: floor2Id,}
           );
 
           mapView.Camera.set({
-            pitch: 20,
+            pitch: 26,
             bearing: 159,
-            zoomLevel: 16,
+            zoomLevel: 18,
           });
-          
+
           mapView.BlueDot.enable({
             watchDevicePosition: false,
             color: '#39A2F9',
@@ -179,8 +178,8 @@ const App: React.FC = () => {
             inactiveColor: 'wheat',
             timeout: 20000,
           });
-       
-          
+
+
           const pois = mapData.getByType('point-of-interest');
 
           pois.forEach((poi) => {
@@ -200,7 +199,7 @@ const App: React.FC = () => {
               mapView.Labels.add(poi.coordinate, poi.name, {
                 appearance: MarkerPointerr,
                 interactive: true,
-                rank: 'medium',
+                rank: 'always-visible',
               });
             }
           });
@@ -211,9 +210,9 @@ const App: React.FC = () => {
           // };
 
 
-          window.sendLocationToWebApp = (location, options = { center: false }) => {
+          window.sendLocationToWebApp = (location, center?: boolean) => {
             updateBlueDotWithLocation(mapView, location);
-            if (options.center) {
+            if (center) {
               const { latitude, longitude } = location;
               const coordinate = mapView.createCoordinate(latitude, longitude);
               mapView.Camera.set({ center: coordinate });
@@ -229,7 +228,7 @@ const App: React.FC = () => {
           };
 
           window.getAllPOIsOnAllFloors = (distance = false) => {
-            return getAllPOIsOnAllFloors(mapData, mapView , locationRef.current , distance);
+            return getAllPOIsOnAllFloors(mapData, mapView, locationRef.current, distance);
           };
 
           window.getAllFloors = () => {
