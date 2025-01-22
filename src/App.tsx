@@ -8,7 +8,7 @@ declare global {
     sendLocationToWebApp?: (
       location: { latitude: number; longitude: number; accuracy: number },
       options?: { center?: boolean }) => void;
-    getAllPOIsOnAllFloors?: () => any[];
+    getAllPOIsOnAllFloors?: (distance?: boolean) => any[];
     NavigateToPOI?: (Point: string) => string;
     getCurrentFloorId: () => string | null;
     getAllFloors?: () => { id: string; name: string }[];
@@ -62,8 +62,13 @@ const getAllFloors = (mapData: any) => {
 //   console.log(pois);
 //   return pois;
 // };
+const coordinates = [
+  { latitude: 50.051445297436906, longitude: 8.573888102899321, accuracy: 1 , floorid : 'm_01a8460ea3632b89' },
+  { latitude: 50.05088076816026, longitude: 8.572121422508308, accuracy: 1 },
+];
 
-const getAllPOIsOnAllFloors = (mapData: any, currentLocation:any) => {
+
+const getAllPOIsOnAllFloors = (mapData:any, mapView : any, currentLocation:any, calculateDistance = false) => {
   if (!mapData) {
     console.error('Map data is not initialized.');
     return [];
@@ -72,25 +77,10 @@ const getAllPOIsOnAllFloors = (mapData: any, currentLocation:any) => {
     console.error('Current location is not available.');
     return [];
   }
-
-  const pois: any[] = [];
-  const { latitude, longitude, floorId } = currentLocation;
-
+  const pois = [];
+  // const { latitude, longitude, floorId } = currentLocation;
   for (const poi of mapData.getByType('point-of-interest')) {
-    // Calculate distance from current location to the POI
-    const startCoordinate = mapData.createCoordinate(latitude, longitude, floorId || null);
-    const endCoordinate = poi.coordinate;
-    let distanceToPoi = null;
-
-    try {
-      const directions = mapData.getDirections(startCoordinate, endCoordinate);
-      distanceToPoi = directions ? directions.distance : null;
-    } catch (error) {
-      console.error(`Failed to calculate distance to POI ${poi.name}:`, error);
-    }
-
-    // Add POI details along with the distance
-    pois.push({
+    const poiData = {
       name: poi.name,
       coordinate: poi.coordinate,
       floorId: poi.floor.id,
@@ -99,12 +89,27 @@ const getAllPOIsOnAllFloors = (mapData: any, currentLocation:any) => {
       description: poi.description,
       images: poi.images,
       links: poi.links,
-      distance: distanceToPoi, // Include the calculated distance
-    });
+      distance:0
+    };
+    if (calculateDistance) {
+      const startCoordinate = mapView.createCoordinate(currentLocation.latitude, currentLocation.longitude, currentLocation?.floorId);
+      // Calculate distance from current location to the POI
+      const endCoordinate = poi.coordinate;
+      let distanceToPoi = null;
+      try {
+        const directions = mapData.getDirections(startCoordinate, endCoordinate);
+        distanceToPoi = directions ? directions.distance : null;
+      } catch (error) {
+        console.error(`Failed to calculate distance to POI ${poi.name}:`, error);
+      }
+      poiData.distance = distanceToPoi; // Include the calculated distance
+    }
+    pois.push(poiData);
   }
   console.log(pois);
   return pois;
 };
+
 
 
 // Function to get directions to a POI
@@ -130,6 +135,11 @@ const App: React.FC = () => {
   const locationRef = useRef<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
   useEffect(() => {
+    
+    locationRef.current = coordinates[0];
+  }, []);
+
+  useEffect(() => {
     const initializeMap = async () => {
       try {
         const mapData = await getMapData({
@@ -153,7 +163,7 @@ const App: React.FC = () => {
             bearing: 159,
             zoomLevel: 16,
           });
-
+          
           mapView.BlueDot.enable({
             watchDevicePosition: false,
             color: '#39A2F9',
@@ -169,10 +179,9 @@ const App: React.FC = () => {
             inactiveColor: 'wheat',
             timeout: 20000,
           });
-
+       
+          
           const pois = mapData.getByType('point-of-interest');
-
-
 
           pois.forEach((poi) => {
             const MarkerPointerr: TLabelAppearance = {
@@ -201,6 +210,7 @@ const App: React.FC = () => {
           //   updateBlueDotWithLocation(mapView, location);
           // };
 
+
           window.sendLocationToWebApp = (location, options = { center: false }) => {
             updateBlueDotWithLocation(mapView, location);
             if (options.center) {
@@ -218,8 +228,8 @@ const App: React.FC = () => {
             return getCurrentFloorId(mapView);
           };
 
-          window.getAllPOIsOnAllFloors = () => {
-            return getAllPOIsOnAllFloors(mapData, locationRef.current);
+          window.getAllPOIsOnAllFloors = (distance = false) => {
+            return getAllPOIsOnAllFloors(mapData, mapView , locationRef.current , distance);
           };
 
           window.getAllFloors = () => {
