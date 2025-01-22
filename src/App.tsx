@@ -5,7 +5,9 @@ import '@mappedin/mappedin-js/lib/index.css';
 
 declare global {
   interface Window {
-    sendLocationToWebApp?: (location: { latitude: number; longitude: number; accuracy: number }) => void;
+    sendLocationToWebApp?: (
+      location: { latitude: number; longitude: number; accuracy: number },
+      options?: { center?: boolean }) => void;
     getAllPOIsOnAllFloors?: () => any[];
     NavigateToPOI?: (Point: string) => string;
     getCurrentFloorId: () => string | null;
@@ -38,14 +40,56 @@ const getAllFloors = (mapData: any) => {
 
 
 // Function to get all POIs across all floors
-const getAllPOIsOnAllFloors = (mapData: any) => {
+// const getAllPOIsOnAllFloors = (mapData: any) => {
+//   if (!mapData) {
+//     console.error('Map data is not initialized.');
+//     return [];
+//   }
+//   const pois: any[] = [];
+
+//   for (const poi of mapData.getByType('point-of-interest')) {
+//     pois.push({
+//       name: poi.name,
+//       coordinate: poi.coordinate,
+//       floorId: poi.floor.id,
+//       floorName: poi.floor.name,
+//       id: poi.id,
+//       description: poi.description,
+//       images: poi.images,
+//       links: poi.links,
+//     });
+//   }
+//   console.log(pois);
+//   return pois;
+// };
+
+const getAllPOIsOnAllFloors = (mapData: any, currentLocation:any) => {
   if (!mapData) {
     console.error('Map data is not initialized.');
     return [];
   }
+  if (!currentLocation) {
+    console.error('Current location is not available.');
+    return [];
+  }
+
   const pois: any[] = [];
+  const { latitude, longitude, floorId } = currentLocation;
 
   for (const poi of mapData.getByType('point-of-interest')) {
+    // Calculate distance from current location to the POI
+    const startCoordinate = mapData.createCoordinate(latitude, longitude, floorId || null);
+    const endCoordinate = poi.coordinate;
+    let distanceToPoi = null;
+
+    try {
+      const directions = mapData.getDirections(startCoordinate, endCoordinate);
+      distanceToPoi = directions ? directions.distance : null;
+    } catch (error) {
+      console.error(`Failed to calculate distance to POI ${poi.name}:`, error);
+    }
+
+    // Add POI details along with the distance
     pois.push({
       name: poi.name,
       coordinate: poi.coordinate,
@@ -55,11 +99,13 @@ const getAllPOIsOnAllFloors = (mapData: any) => {
       description: poi.description,
       images: poi.images,
       links: poi.links,
+      distance: distanceToPoi, // Include the calculated distance
     });
   }
   console.log(pois);
   return pois;
 };
+
 
 // Function to get directions to a POI
 const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiId: any) => {
@@ -109,7 +155,7 @@ const App: React.FC = () => {
           });
 
           mapView.BlueDot.enable({
-            watchBrowserPosition: false,
+            watchDevicePosition: false,
             color: '#39A2F9',
             debug: true,
             accuracyRing: {
@@ -151,8 +197,17 @@ const App: React.FC = () => {
           });
 
 
-          window.sendLocationToWebApp = (location) => {
+          // window.sendLocationToWebApp = (location) => {
+          //   updateBlueDotWithLocation(mapView, location);
+          // };
+
+          window.sendLocationToWebApp = (location, options = { center: false }) => {
             updateBlueDotWithLocation(mapView, location);
+            if (options.center) {
+              const { latitude, longitude } = location;
+              const coordinate = mapView.createCoordinate(latitude, longitude);
+              mapView.Camera.set({ center: coordinate });
+            }
           };
 
           window.NavigateToPOI = (Point) => {
@@ -164,7 +219,7 @@ const App: React.FC = () => {
           };
 
           window.getAllPOIsOnAllFloors = () => {
-            return getAllPOIsOnAllFloors(mapData);
+            return getAllPOIsOnAllFloors(mapData, locationRef.current);
           };
 
           window.getAllFloors = () => {
@@ -184,7 +239,7 @@ const App: React.FC = () => {
     location: { latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device"; }
   ) => {
     if (mapView) {
-      alert(location);
+      //alert(location);
       locationRef.current = location;
       mapView.BlueDot.update(location);
     } else {
