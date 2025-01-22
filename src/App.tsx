@@ -53,6 +53,12 @@ const App: React.FC = () => {
             timeout: 20000,
           });
 
+          // Add POI labels
+          for (const poi of mapData.getByType('point-of-interest')) {
+            if (poi.floor.id === mapView.currentFloor.id) {
+              mapView.Labels.add(poi.coordinate, poi.name);
+            }
+          }
           window.sendLocationToWebApp = (location) => {
             updateBlueDotWithLocation(mapView, location);
           };
