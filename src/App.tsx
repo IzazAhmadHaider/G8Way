@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { getMapData, show3dMap } from '@mappedin/mappedin-js';
+import { getMapData, show3dMap, TLabelAppearance } from '@mappedin/mappedin-js';
 import { mapConfig } from './config';
 import '@mappedin/mappedin-js/lib/index.css';
 
@@ -32,9 +32,9 @@ const App: React.FC = () => {
           const mapView = await show3dMap(mapContainer, mapData);
 
           mapView.Camera.set({
-            pitch: 5,
-            bearing: 70,
-            zoomLevel: 10,
+            pitch: 20,
+            bearing: 159,
+            zoomLevel: 16,
           });
 
           mapView.BlueDot.enable({
@@ -52,6 +52,31 @@ const App: React.FC = () => {
             inactiveColor: 'wheat',
             timeout: 20000,
           });
+          
+          const pois = mapData.getByType('point-of-interest');
+       
+    
+
+          pois.forEach((poi) => {
+            const openDoorLabelAppearance: TLabelAppearance = {
+              marker: {
+                icon: 'https://example.com/open-door-icon.png',
+                iconFit: "contain",
+                foregroundColor: {
+                  inactive: "green",
+                  active: "green",
+                },
+              },
+            }
+            if (poi.name && poi.floor.id === mapView.currentFloor.id) {
+              mapView.Labels.add(poi.coordinate, poi.name, {
+                appearance: openDoorLabelAppearance,
+                interactive: true, 
+                rank: 'medium',
+              });
+            }
+            });
+
 
           window.sendLocationToWebApp = (location) => {
             updateBlueDotWithLocation(mapView, location);
@@ -113,7 +138,6 @@ const App: React.FC = () => {
         links: poi.links,
       });
     }
-    console.log(pois)
     return pois;
   };
 
@@ -132,7 +156,7 @@ const App: React.FC = () => {
       mapView.Navigation.draw(directions);
       return directions.distance;
     }
-    return null; 
+    return null;
   };
 
 
@@ -142,6 +166,7 @@ const App: React.FC = () => {
     location: { latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device"; }
   ) => {
     if (mapView) {
+      alert(location);
       locationRef.current = location;
       mapView.BlueDot.update(location);
     } else {
