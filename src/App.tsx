@@ -38,33 +38,10 @@ const getAllFloors = (mapData: any) => {
 };
 
 
-// Function to get all POIs across all floors
-// const getAllPOIsOnAllFloors = (mapData: any) => {
-//   if (!mapData) {
-//     console.error('Map data is not initialized.');
-//     return [];
-//   }
-//   const pois: any[] = [];
-
-//   for (const poi of mapData.getByType('point-of-interest')) {
-//     pois.push({
-//       name: poi.name,
-//       coordinate: poi.coordinate,
-//       floorId: poi.floor.id,
-//       floorName: poi.floor.name,
-//       id: poi.id,
-//       description: poi.description,
-//       images: poi.images,
-//       links: poi.links,
-//     });
-//   }
-//   console.log(pois);
-//   return pois;
-// };
-const coordinates = [
-  { latitude: 50.051445297436906, longitude: 8.573888102899321, accuracy: 1, floorid: 'm_01a8460ea3632b89' },
-  { latitude: 50.05088076816026, longitude: 8.572121422508308, accuracy: 1 },
-];
+// const coordinates = [
+//   { latitude: 50.051445297436906, longitude: 8.573888102899321, accuracy: 1, floorid: 'm_01a8460ea3632b89' },
+//   { latitude: 50.05088076816026, longitude: 8.572121422508308, accuracy: 1 },
+// ];
 
 
 const getAllPOIsOnAllFloors = (mapData: any, mapView: any, currentLocation: any, calculateDistance = false) => {
@@ -134,11 +111,6 @@ const App: React.FC = () => {
   const locationRef = useRef<{ latitude: number; longitude: number; accuracy: number, floorOrFloorId?: string | "device" } | null>(null);
 
   useEffect(() => {
-
-    locationRef.current = coordinates[0];
-  }, []);
-
-  useEffect(() => {
     const initializeMap = async () => {
       try {
         const mapData = await getMapData({
@@ -146,21 +118,17 @@ const App: React.FC = () => {
           secret: mapConfig.apiSecret,
           mapId: mapConfig.mapId,
         });
-        // const floors = mapData.getByType('floor');
-        // const floor2 = floors.find(floor => floor.name === '2');
-        // const floor2Id = floor2.id;
-
-
+       
         const mapContainer = document.getElementById('mappedin-map');
         if (mapContainer) {
           const mapView = await show3dMap(mapContainer, mapData,
-            // {initialFloor: floor2Id,}
+            {initialFloor: 'm_f2786e5df102b3c5',}
           );
 
           mapView.Camera.set({
             pitch: 26,
             bearing: 159,
-            zoomLevel: 18,
+            zoomLevel: 16.5,
           });
 
           mapView.BlueDot.enable({
@@ -186,7 +154,7 @@ const App: React.FC = () => {
             const MarkerPointerr: TLabelAppearance = {
               margin: 10,
               marker: {
-                icon: '/PointerMarker.svg',
+                icon: 'PointerMarker.svg',
                 iconFit: "contain",
                 iconPadding: -5,
                 foregroundColor: {
@@ -199,7 +167,8 @@ const App: React.FC = () => {
               mapView.Labels.add(poi.coordinate, poi.name, {
                 appearance: MarkerPointerr,
                 interactive: true,
-                rank: 'always-visible',
+                //rank: 'always-visible',
+                rank: 'high',
               });
             }
           });
