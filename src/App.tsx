@@ -9,6 +9,7 @@ declare global {
       location: { latitude: number; longitude: number; accuracy: number }, center?: boolean) => void;
     getAllPOIsOnAllFloors?: (distance?: boolean) => any[];
     NavigateToPOI?: (Point: string) => string;
+    NavigateToMultiplePOIs?: (Points: string[]) => { routes: any[]; totalDistance: number };
     getCurrentFloorId: () => string | null;
     getAllFloors?: () => { id: string; name: string }[];
   }
@@ -86,8 +87,6 @@ const getAllPOIsOnAllFloors = (mapData: any, mapView: any, currentLocation: any,
   return pois;
 };
 
-
-
 // Function to get directions to a POI
 const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiId: any) => {
   const allPOIs = mapData.getByType('point-of-interest');
@@ -105,6 +104,48 @@ const getDirectionToPOI = (mapData: any, mapView: any, startPoint: any, poiId: a
   }
   return null;
 };
+const getDirectionsForMultiplePOIs = (mapData: any, mapView: any, startPoint: any, poiIds: string[]) => {
+  if (!mapData || !mapView || !startPoint || poiIds.length < 2) {
+    console.error("Invalid inputs for multi-destination navigation.");
+    return { routes: [], totalDistance: 0 };
+  }
+
+  const allPOIs = mapData.getByType('point-of-interest');
+  const poiIdSet = new Set(poiIds.map(id => id.trim()));
+  const pathDetails = [];
+  let totalDistance = 0;
+  let currentStartPoint = startPoint;
+
+  // Process each POI based on the provided poiIds
+  for (let i = 0; i < poiIds.length; i++) {
+    const targetPOI = allPOIs.find((poi: { id: string }) => poiIdSet.has(poi.id)); 
+    if (!targetPOI) {
+      console.error(`POI "${poiIds[i]}" not found.`);
+      break; // Exit if POI is not found
+    }
+
+    const startCoordinate = mapView.createCoordinate(currentStartPoint.latitude, currentStartPoint.longitude, currentStartPoint?.floorId);
+    const endCoordinate = targetPOI.coordinate;
+
+    try {
+      const directions = mapData.getDirections(startCoordinate, endCoordinate);
+      if (directions) {
+        mapView.Navigation.draw(directions);
+        pathDetails.push({
+          from: currentStartPoint,
+          to: targetPOI,
+          distance: directions.distance,
+        });
+        totalDistance += directions.distance; // Update total distance
+        currentStartPoint = { latitude: targetPOI.coordinate.latitude, longitude: targetPOI.coordinate.longitude, floorId: targetPOI.floor.id };
+      }
+    } catch (error) {
+      console.error(`Failed to get directions to POI "${poiIds[i]}":`, error);
+    }
+  }
+
+  return { routes: pathDetails, totalDistance }; // Return both routes and totalDistance
+};
 
 // The main App component
 const App: React.FC = () => {
@@ -118,11 +159,11 @@ const App: React.FC = () => {
           secret: mapConfig.apiSecret,
           mapId: mapConfig.mapId,
         });
-       
+
         const mapContainer = document.getElementById('mappedin-map');
         if (mapContainer) {
           const mapView = await show3dMap(mapContainer, mapData,
-            {initialFloor: 'm_f2786e5df102b3c5',}
+            { initialFloor: 'm_f2786e5df102b3c5', }
           );
 
           mapView.Camera.set({
@@ -174,11 +215,6 @@ const App: React.FC = () => {
           });
 
 
-          // window.sendLocationToWebApp = (location) => {
-          //   updateBlueDotWithLocation(mapView, location);
-          // };
-
-
           window.sendLocationToWebApp = (location, center?: boolean) => {
             updateBlueDotWithLocation(mapView, location);
             if (center) {
@@ -190,6 +226,11 @@ const App: React.FC = () => {
 
           window.NavigateToPOI = (Point) => {
             return getDirectionToPOI(mapData, mapView, locationRef.current, Point);
+          };
+
+
+          window.NavigateToMultiplePOIs = (poiIds: string[]) => {
+            return getDirectionsForMultiplePOIs(mapData, mapView, locationRef.current, poiIds);
           };
 
           window.getCurrentFloorId = () => {
