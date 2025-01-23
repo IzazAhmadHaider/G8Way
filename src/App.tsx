@@ -111,37 +111,52 @@ const getDirectionsForMultiplePOIs = (mapData: any, mapView: any, startPoint: an
   }
 
   const allPOIs = mapData.getByType('point-of-interest');
-  const poiIdSet = new Set(poiIds.map(id => id.trim()));
-  const pathDetails = [];
+  const coordinatesList = [];
   let totalDistance = 0;
-  let currentStartPoint = startPoint;
+  const pathDetails = [];
 
-  // Process each POI based on the provided poiIds
-  for (let i = 0; i < poiIds.length; i++) {
-    const targetPOI = allPOIs.find((poi: { id: string }) => poiIdSet.has(poi.id)); 
+  // Add start coordinate to the list
+  const startCoordinate = mapView.createCoordinate(
+    startPoint.latitude,
+    startPoint.longitude,
+    startPoint?.floorId
+  );
+  coordinatesList.push(startCoordinate);
+
+  // Collect coordinates for the given POI IDs
+  for (const poiId of poiIds) {
+    const targetPOI = allPOIs.find((poi: { id: string }) => poi.id === poiId);
+
     if (!targetPOI) {
-      console.error(`POI "${poiIds[i]}" not found.`);
-      break; // Exit if POI is not found
+      console.error(`POI "${poiId}" not found.`);
+      continue; // Skip if POI is not found
     }
 
-    const startCoordinate = mapView.createCoordinate(currentStartPoint.latitude, currentStartPoint.longitude, currentStartPoint?.floorId);
-    const endCoordinate = targetPOI.coordinate;
+    coordinatesList.push(targetPOI.coordinate); // Add POI's coordinate to the list
+  }
 
-    try {
-      const directions = mapData.getDirections(startCoordinate, endCoordinate);
-      if (directions) {
-        mapView.Navigation.draw(directions);
-        pathDetails.push({
-          from: currentStartPoint,
-          to: targetPOI,
-          distance: directions.distance,
-        });
-        totalDistance += directions.distance; // Update total distance
-        currentStartPoint = { latitude: targetPOI.coordinate.latitude, longitude: targetPOI.coordinate.longitude, floorId: targetPOI.floor.id };
+  // Use mapData.getDirections with the list of coordinates
+  try {
+    const directions = mapData.getDirections(startCoordinate, coordinatesList);
+
+    if (directions) {
+      mapView.Navigation.draw(directions); // Draw the full path
+      totalDistance = directions.totalDistance; // Get the total distance from directions
+
+      // Populate path details for each leg of the journey
+      for (let i = 0; i < poiIds.length; i++) {
+        const targetPOI = allPOIs.find((poi: { id: string }) => poi.id === poiIds[i]);
+        if (targetPOI) {
+          pathDetails.push({
+            from: i === 0 ? startPoint : allPOIs.find((poi: { id: string }) => poi.id === poiIds[i - 1]),
+            to: targetPOI,
+            distance: directions.legs[i]?.distance, // Optional: if legs provide distance info
+          });
+        }
       }
-    } catch (error) {
-      console.error(`Failed to get directions to POI "${poiIds[i]}":`, error);
     }
+  } catch (error) {
+    console.error("Failed to get directions:", error);
   }
 
   return { routes: pathDetails, totalDistance }; // Return both routes and totalDistance
