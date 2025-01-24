@@ -497,8 +497,8 @@ const App: React.FC = () => {
       mapView.BlueDot.update(location);
       if (center) {
         mapView.Camera.set({
-          // bearing: 30,
-          // pitch: 80,
+          bearing: 30,
+          pitch: 80,
           zoomLevel: 20,
           center: location,
         });
