@@ -68,10 +68,10 @@ const getAllFloors = (mapData: any) => {
   return floors;
 };
 
-// const coordinates = [
-//   { latitude: 50.05099622923234, longitude: 8.572008274302208, accuracy: 10 },
-//   { latitude: 50.05077437316641, longitude: 8.571272123569962, accuracy: 1 },
-// ];
+const coordinates = [
+  { latitude: 50.05099622923234, longitude: 8.572008274302208, accuracy: 10 },
+  { latitude: 50.05077437316641, longitude: 8.571272123569962, accuracy: 1 },
+];
  
 const getAllPOIsOnAllFloors = (
   mapData: any,
@@ -412,7 +412,7 @@ const App: React.FC = () => {
           // getAllPOIsOnAllFloors(mapData, mapView, coordinates[0] , true);
           // console.timeEnd("getAllPOIsOnAllFloors");
 
-          // updateBlueDotWithLocation(mapView, coordinates[0] , true)
+          updateBlueDotWithLocation(mapView, coordinates[0] , true)
           // getDirectionsForMultiplePOIs(mapData, mapView, coordinates[0], ['s_325987648b5dd1cc', 's_eb2827ef87440666', "s_f353785f99a45817"])
           // updateMappedinVisibleArea(mapView, 2000, 5000);
 
