@@ -69,10 +69,10 @@ const getAllFloors = (mapData: any) => {
 };
 
 // const coordinates = [
-//   { latitude: 50.05089422913231, longitude: 8.572008274302208, accuracy: 10 },
+//   { latitude: 50.05099622923234, longitude: 8.572008274302208, accuracy: 10 },
 //   { latitude: 50.05077437316641, longitude: 8.571272123569962, accuracy: 1 },
 // ];
-
+ 
 const getAllPOIsOnAllFloors = (
   mapData: any,
   mapView: any,
