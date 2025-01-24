@@ -5,6 +5,13 @@ import "@mappedin/mappedin-js/lib/index.css";
 
 declare global {
   interface Window {
+    webkit?: {
+      messageHandlers?: {
+        g8wayapp?: {
+          postMessage: (message: string) => void;
+        };
+      };
+    };
     sendLocationToWebApp?: (
       location: { latitude: number; longitude: number; accuracy: number },
       center?: boolean
@@ -254,6 +261,7 @@ const highlightUniquePOIs = (
     return;
   }
 
+  mapView.Markers.removeAll();
   const pois = mapData.getByType("point-of-interest");
 
   pois.forEach((poi: any) => {
@@ -321,8 +329,8 @@ const highlightUniquePOIs = (
       mapView.Markers.add(poi.coordinate, uniqueMarkerTemplate, {
         rank: "always-visible", // or any other rank logic
       });
-      // } else if (poi.name && uniquePOIIds.length == 0  && poi.floor.id === mapView.currentFloor.id) {
-    } else if (poi.name && poi.floor.id === mapView.currentFloor.id) {
+    } else if (poi.name && uniquePOIIds.length == 0  && poi.floor.id === mapView.currentFloor.id) {
+    //} else if (poi.name && poi.floor.id === mapView.currentFloor.id) {
       // Always add a default marker for normal POIs
       mapView.Markers.add(poi.coordinate, defaultMarkerTemplate, {
         rank: "high", // or any other rank logic
@@ -356,7 +364,7 @@ const App: React.FC = () => {
           });
 
           mapView.Camera.set({
-            pitch: 26,
+            pitch: 0,
             bearing: 159,
             zoomLevel: 16.5,
           });
@@ -398,6 +406,8 @@ const App: React.FC = () => {
             timeout: 20000,
           });
           highlightUniquePOIs(mapData, mapView);
+          //highlightUniquePOIs(mapData, mapView ,  ['s_325987648b5dd1cc', 's_eb2827ef87440666', "s_f353785f99a45817"]);
+
           // console.time("getAllPOIsOnAllFloors");
           // getAllPOIsOnAllFloors(mapData, mapView, coordinates[0] , true);
           // console.timeEnd("getAllPOIsOnAllFloors");
@@ -452,6 +462,12 @@ const App: React.FC = () => {
           window.getAllFloors = () => {
             return getAllFloors(mapData);
           };
+          
+          if (window.webkit?.messageHandlers?.g8wayapp) {
+            window.webkit.messageHandlers.g8wayapp.postMessage("MapInitialized");
+          } else {
+            console.error("g8wayapp message handler is not available.");
+          }
         }
       } catch (error) {
         console.error("Failed to initialize map:", error);
@@ -461,6 +477,8 @@ const App: React.FC = () => {
     //     return <div>Loading...</div>;
     //   }
     initializeMap();
+    
+   
   }, []);
 
   const updateBlueDotWithLocation = (
