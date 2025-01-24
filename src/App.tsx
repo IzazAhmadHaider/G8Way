@@ -496,12 +496,15 @@ const App: React.FC = () => {
       locationRef.current = location;
       mapView.BlueDot.update(location);
       if (center) {
-        mapView.Camera.set({
-          bearing: 30,
-          pitch: 80,
-          zoomLevel: 20,
-          center: location,
-        });
+        mapView.Camera.animateTo(
+          {
+            bearing: 30,
+            pitch: 80,
+            zoomLevel: 100,
+            center: location,
+          },
+          { duration: 4000, easing: 'ease-in-out' },
+        );
       }
     } else {
       console.error("MapView is not initialized.");
