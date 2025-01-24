@@ -494,6 +494,7 @@ const App: React.FC = () => {
     if (mapView) {
       //alert(location);
       locationRef.current = location;
+      const createdcoordinates = mapView.createCoordinate(locationRef.current.latitude, locationRef.current.longitude, locationRef.current?.floorOrFloorId);
       mapView.BlueDot.update(location);
       if (center) {
         mapView.Camera.animateTo(
@@ -501,7 +502,7 @@ const App: React.FC = () => {
             bearing: 30,
             pitch: 80,
             zoomLevel: 100,
-            center: location,
+            center: createdcoordinates,
           },
           { duration: 4000, easing: 'ease-in-out' },
         );
