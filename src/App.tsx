@@ -22,21 +22,21 @@ declare global {
   }
 }
 
-// const updateMappedinVisibleArea = (
-//   mapView: any,
-//   width: number,
-//   height: number
-// ) => {
-//   if (!mapView) return console.error("MapView not initialized.");
+const updateMappedinVisibleArea = (
+  mapView: any,
+  width: number,
+  height: number
+) => {
+  if (!mapView) return console.error("MapView not initialized.");
 
-//   // Example: Center a specific location on the map using provided dimensions
-//   const targetCoordinate = { latitude: 43.644, longitude: -79.395 }; // Replace with actual coordinates
-//   mapView.Camera.set({
-//     pitch: 26,
-//     bearing: 159,
-//     zoomLevel: 16.5,
-//   });
-// };
+  // Example: Center a specific location on the map using provided dimensions
+  const targetCoordinate = { latitude: 43.644, longitude: -79.395 }; // Replace with actual coordinates
+  mapView.Camera.set({
+    pitch: 26,
+    bearing: 159,
+    zoomLevel: 16.5,
+  });
+};
 
 // Function to get the current floor ID
 const getCurrentFloorId = (mapView: any) => {
@@ -61,10 +61,10 @@ const getAllFloors = (mapData: any) => {
   return floors;
 };
 
-// const coordinates = [
-//   { latitude: 50.05089422913231, longitude: 8.572008274302208, accuracy: 10 },
-//   { latitude: 50.05077437316641, longitude: 8.571272123569962, accuracy: 1 },
-// ];
+const coordinates = [
+  { latitude: 50.05089422913231, longitude: 8.572008274302208, accuracy: 10 },
+  { latitude: 50.05077437316641, longitude: 8.571272123569962, accuracy: 1 },
+];
 
 const getAllPOIsOnAllFloors = (
   mapData: any,
@@ -80,20 +80,9 @@ const getAllPOIsOnAllFloors = (
     console.error("Current location is not available.");
     return [];
   }
-
   const pois = [];
-  const startCoordinate = mapView.createCoordinate(
-    currentLocation.latitude,
-    currentLocation.longitude,
-    currentLocation?.floorId
-  );
-
+  // const { latitude, longitude, floorId } = currentLocation;
   for (const poi of mapData.getByType("point-of-interest")) {
-    //console.log(poi.floor)
-    if (poi.floor.id !== "m_f2786e5df102b3c5") {
-      continue; 
-    }
-
     const poiData = {
       name: poi.name,
       coordinate: poi.coordinate,
@@ -105,17 +94,21 @@ const getAllPOIsOnAllFloors = (
       links: poi.links,
       distance: 0,
     };
-
     if (calculateDistance) {
+      const startCoordinate = mapView.createCoordinate(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        currentLocation?.floorId
+      );
       // Calculate distance from current location to the POI
       const endCoordinate = poi.coordinate;
       let distanceToPoi = null;
       try {
-        const directions = mapData.getDirections(
+        const directions = mapData.getDistance(
           startCoordinate,
           endCoordinate
         );
-        distanceToPoi = directions ? directions.distance : null;
+        distanceToPoi = directions ? directions : null;
       } catch (error) {
         console.error(
           `Failed to calculate distance to POI ${poi.name}:`,
@@ -124,10 +117,9 @@ const getAllPOIsOnAllFloors = (
       }
       poiData.distance = distanceToPoi;
     }
-
-    pois.push(poiData); // Add the POI to the result list
+    pois.push(poiData);
   }
-  console.log(pois); // Debugging output
+  console.log(pois);
   return pois;
 };
 
@@ -188,49 +180,55 @@ const getDirectionsForMultiplePOIs = (
     );
   }
 
-  // Create start and end coordinates
+  for (let i = 0; i < targetPOIs.length; i++) {
+    const targetPOI = targetPOIs[i];
+
+    // Create start and end coordinates
+    const startCoordinate = mapView.createCoordinate(
+      currentStartPoint.latitude,
+      currentStartPoint.longitude,
+      currentStartPoint?.floorId
+    );
+
+    const endCoordinate = mapView.createCoordinate(
+      targetPOI.coordinate.latitude,
+      targetPOI.coordinate.longitude,
+      targetPOI?.floor.id
+    );
+
+    try {
+      // Calculate step-by-step directions
+      const directions = mapData.getDirections(startCoordinate, endCoordinate);
+      if (directions) {
+        pathDetails.push({
+          from: currentStartPoint,
+          to: targetPOI,
+          distance: directions.distance,
+        });
+
+        totalDistance += directions.distance;
+
+        // Update the current start point for the next route step
+        currentStartPoint = {
+          latitude: targetPOI.coordinate.latitude,
+          longitude: targetPOI.coordinate.longitude,
+          floorId: targetPOI.floor.id,
+        };
+      }
+    } catch (error) {
+      console.error(
+        `Failed to get directions to POI "${targetPOI.id}":`,
+        error
+      );
+    }
+  }
+
+  // Draw the entire multi-destination route on the map
   const startCoordinate = mapView.createCoordinate(
-    currentStartPoint.latitude,
-    currentStartPoint.longitude,
-    currentStartPoint?.floorId
+    startPoint.latitude,
+    startPoint.longitude,
+    startPoint.floorId
   );
-
-  // for (let i = 0; i < targetPOIs.length; i++) {
-  //   const targetPOI = targetPOIs[i];
-
-  //   const endCoordinate = mapView.createCoordinate(
-  //     targetPOI.coordinate.latitude,
-  //     targetPOI.coordinate.longitude,
-  //     targetPOI?.floor.id
-  //   );
-
-  //   try {
-  //     // Calculate step-by-step directions
-  //     const directions = mapData.getDirections(startCoordinate, endCoordinate);
-  //     if (directions) {
-  //       pathDetails.push({
-  //         from: currentStartPoint,
-  //         to: targetPOI,
-  //         distance: directions.distance,
-  //       });
-
-  //       totalDistance += directions.distance;
-
-  //       // Update the current start point for the next route step
-  //       currentStartPoint = {
-  //         latitude: targetPOI.coordinate.latitude,
-  //         longitude: targetPOI.coordinate.longitude,
-  //         floorId: targetPOI.floor.id,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     console.error(
-  //       `Failed to get directions to POI "${targetPOI.id}":`,
-  //       error
-  //     );
-  //   }
-  // }
-
   const endCoordinates = targetPOIs.map((poi: any) => poi.coordinate);
 
   const fullRoute = mapData.getDirectionsMultiDestination(
@@ -405,15 +403,19 @@ const App: React.FC = () => {
 
           // updateMappedinVisibleArea(mapView, 400, 600);
 
+          console.time("getAllPOIsOnAllFloors");
+          getAllPOIsOnAllFloors(mapData, mapView, coordinates[0] , true);
+          console.timeEnd("getAllPOIsOnAllFloors");
+
           window.sendLocationToWebApp = (location, center?: boolean) => {
             updateBlueDotWithLocation(mapView, location, center);
           };
           window.highlightUniquePOIs = (uniquePOIIds: string[]) => {
             highlightUniquePOIs(mapData, mapView, uniquePOIIds);
           };
-          // window.updateVisibleArea = (width, height) => {
-          //   updateMappedinVisibleArea(mapView, width, height);
-          // };
+          window.updateVisibleArea = (width, height) => {
+            updateMappedinVisibleArea(mapView, width, height);
+          };
 
           window.NavigateToPOI = (Point) => {
             return getDirectionToPOI(
